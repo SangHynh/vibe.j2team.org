@@ -30,7 +30,7 @@ let _arpInterval: ReturnType<typeof setInterval> | null = null;
 let _lastMasterVol = -999;
 
 function setMasterVol(instruments: any, vol: number) {
-  if (!instruments.masterVol) return;
+  if (!instruments.masterVol?.volume) return;
   if (Math.abs(_lastMasterVol - vol) < 0.2) return;
   instruments.masterVol.volume.rampTo(vol, 0.1);
   _lastMasterVol = vol;
@@ -102,7 +102,7 @@ export const updateAudioZones = (progress: number, instruments: any, Tone: any) 
   if (progress >= 20.0 && progress < 24.5) {
     const tension = (progress - 20.0) / 4.5;
     setMasterVol(instruments, -10 + tension * 5);
-    instruments.cosmicDrone?.detune.rampTo(tension * 100, 0.05);
+    instruments.cosmicDrone?.detune?.rampTo?.(tension * 100, 0.05);
     const pulseTick = Math.floor(progress * 4) % 2;
     if (pulseTick === 0 && !instruments._pulseLock) {
       instruments.pulseBass?.triggerAttackRelease("F1", "16n", Tone.now(), 0.3 * tension);
@@ -449,7 +449,7 @@ export const updateAudioZones = (progress: number, instruments: any, Tone: any) 
     stopArp();
     const soul = (progress - 900.0) / 160.0;
 
-    if (instruments.masterVol) instruments.masterVol.volume.value = -24 + soul * 20;
+    if (instruments.masterVol?.volume) instruments.masterVol.volume.value = -24 + soul * 20;
 
     if (soul > 0.6) {
       const padTick = Math.floor(progress / 20);
